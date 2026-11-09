@@ -8,10 +8,23 @@ class Matrix[T](val rows: Int, val columns: Int, val data: List[T]):
 
   private def positionOf(i: Int): Position = Position(i / columns, i % columns)
 
-  def inside(p: Position): Boolean = ??? //TODO
+  def inside(p: Position): Boolean = // comprobamos si la posicion esta dentro de rango y devolvemos true
+    p.row < rows && p.column < columns // no hace falta comprobar que son positivos porque la matrix lo requiere
 
-  def get(p: Position): T = ??? //TODO
+  def get(p: Position): T =
+    if !inside(p) then
+      throw new IndexOutOfBoundsException(p.toString)
 
+  @scala.annotation.tailrec
+  def aux(resto: List[T], contador: Int): T =
+    resto match
+      case x :: y =>
+        if contador == index(p) then x
+        else aux(y, contador + 1)
+      case Nil =>
+        throw new IndexOutOfBoundsException(p.toString)
+
+  aux(data, 0)
   def update(p: Position, value: T): Matrix[T] = ??? //TODO
 
   def neighbors(p: Position): List[Position] = ??? //TODO
