@@ -1,7 +1,6 @@
 package gameoflife
 
-import scala.io.StdIn
-import scala.util.{Random, Try}
+import scala.util.{Random, Success, Failure}
 
 trait Strategy:
   def choosePosition(state: State, player: Player, error: Option[String]): Position
@@ -19,22 +18,18 @@ case object ManualStrategy extends Strategy:
     @annotation.tailrec
     // Creamos una funcion auxiliar recursiva para pedir al jugador la posicion hasta que nos de un formato valido
     def leerPosicion(): Position = {
-      val linea = StdIn.readLine("Introduce fila columna: ")
-      // Como bien indica el enunciado -> 'Si readLine devuelve null (se ha cerrado la entrada), la partida termina'
-      if linea == null then throw new java.io.EOFException("Se ha cerrado la entrada")
-      // Leemos la entrada del usuario y la separamos en fila y columna
-      val posicion = linea.trim.split("\\s+").toList match {
-        // Miramos si el formato es valido
-        case fila :: columna :: Nil =>
-          Try(Position(fila.toInt, columna.toInt)).toOption
-        case _ => None
-      }
-      // Si la comprobacion anterior devuelve None, mandamos un mensaje de que el formato era incorrecto y volvermos a pedir una posicion al jugador
-      posicion match {
-        case Some(p) => p
-        case None =>
-          println("Formato incorrecto: introduce dos números enteros separados por espacios.")
-          leerPosicion()
+      // usamos las funciones de Entrada.scala para validar lo que introduce el jugador
+      Entrada.leerLinea("Introduce fila columna: ") match {
+        case Success(Some(texto)) =>
+          Entrada.validarPosicion(texto) match {
+            case Right(posicion) => posicion
+            case Left(mensaje) =>
+              println(mensaje)
+              leerPosicion()
+          }
+        // Controlamos los dos casos de errores que puede devolver leerLinea
+        case Success(None) => throw new java.io.EOFException("Se ha cerrado la entrada")
+        case Failure(error) => throw new java.io.IOException("No se ha podido leer la entrada", error)
       }
     }
 

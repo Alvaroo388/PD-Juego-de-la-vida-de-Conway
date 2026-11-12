@@ -1,7 +1,6 @@
 package gameoflife
 
-import scala.io.StdIn
-import scala.util.Try
+import scala.util.{Success, Failure}
 
 object Main extends App:
   val BoardSize      = 15
@@ -12,20 +11,19 @@ object Main extends App:
   // Pide un numero dentro de un intervalo que usaremos para pedir el numero de celulas
   def readInt(prompt: String, min: Int, max: Int): Int = {
     @annotation.tailrec
-    // Creamos una funcion auxiliar recursiva para pedir un entero dentro del intervalo
+    // Creamos una funcion auxiliar recursiva para pedir un entero dentro del intervalo y usamos las funciones de Entrada.scala para validarlo
     def leerNumero(): Int = {
-      val numero = StdIn.readLine(prompt)
-      // leemos el numero y si hay un error que no permite introducir nada al jugador se detiene
-      if numero == null then throw new java.io.EOFException("Se ha cerrado la entrada")
-      // Intentamos convertir la entrada a entero
-      val resultado = Try(numero.trim.toInt).toOption
-      resultado match {
-        // Si esta todo bien y en el rango devolvemos el numero
-        case Some(n) if n >= min && n <= max => n
-        // Si el formato o el rango no son validos, avisamos y volvemos a pedir el numero
-        case _ =>
-          println(s"Introduce un número entero entre $min y $max.")
-          leerNumero()
+      Entrada.leerLinea(prompt) match {
+        case Success(Some(texto)) =>
+          Entrada.validarPresupuesto(texto, min, max) match {
+            case Right(numero) => numero
+            case Left(mensaje) =>
+              println(mensaje)
+              leerNumero()
+          }
+        // Controlamos los dos casos de errores que puede devolver LeerLinea
+        case Success(None) => throw new java.io.EOFException("Se ha cerrado la entrada")
+        case Failure(error) => throw new java.io.IOException("No se ha podido leer la entrada", error)
       }
     }
     leerNumero()
@@ -34,18 +32,17 @@ object Main extends App:
   // Devuelve true para humano y false para IA
   @annotation.tailrec
   def readHumanOrAI(prompt: String): Boolean = {
-    // usamos recursion hasta conseguir una entrada valida
-    val respuesta = StdIn.readLine(prompt)
-    // tenemos en cuenta el error de bloque de entrada al igual que en el resto de casos
-    if respuesta == null then throw new java.io.EOFException("Se ha cerrado la entrada")
-    // Comprobamos el mayor numero de casos posible, tanto mayuscula como minusculas y quitando espacios
-    respuesta.trim.toLowerCase match {
-      case "h" | "humano" => true
-      case "ia" => false
-      case _ =>
-        // si la entrada no es valida repetimos
-        println("Responde h (humano) o ia.")
-        readHumanOrAI(prompt)
+    // Igual que antes usamos las funciones de Entrada.scala para validar lo que introduce el jugador y controlar los errores
+    Entrada.leerLinea(prompt) match {
+      case Success(Some(texto)) =>
+        Entrada.parsearHumanoOIA(texto) match {
+          case Right(humano) => humano
+          case Left(mensaje) =>
+            println(mensaje)
+            readHumanOrAI(prompt)
+        }
+      case Success(None) => throw new java.io.EOFException("Se ha cerrado la entrada")
+      case Failure(error) => throw new java.io.IOException("No se ha podido leer la entrada", error)
     }
   }
 
@@ -53,14 +50,16 @@ object Main extends App:
   // practicamente igual que la anterior pero con si / no
   @annotation.tailrec
   def readYesNo(prompt: String): Boolean = {
-    val respuesta = StdIn.readLine(prompt)
-    if respuesta == null then throw new java.io.EOFException("Se ha cerrado la entrada")
-    respuesta.trim.toLowerCase match {
-      case "s" | "si" | "sí" => true
-      case "n" | "no" => false
-      case _ =>
-        println("Responde s (sí) o n (no).")
-        readYesNo(prompt)
+    Entrada.leerLinea(prompt) match {
+      case Success(Some(texto)) =>
+        Entrada.parsearSiNo(texto) match {
+          case Right(respuesta) => respuesta
+          case Left(mensaje) =>
+            println(mensaje)
+            readYesNo(prompt)
+        }
+      case Success(None) => throw new java.io.EOFException("Se ha cerrado la entrada")
+      case Failure(error) => throw new java.io.IOException("No se ha podido leer la entrada", error)
     }
   }
 
@@ -109,4 +108,5 @@ object Main extends App:
       Animation.animate(resultado)
   } catch {
     case _: java.io.EOFException => println("Entrada cerrada. La partida ha terminado.")
+    case _: java.io.IOException => println("No se ha podido leer la entrada. La partida ha terminado.")
   }
