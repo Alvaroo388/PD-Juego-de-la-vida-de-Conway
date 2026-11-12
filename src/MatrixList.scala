@@ -9,7 +9,7 @@ class MatrixList[T](val rows: Int, val columns: Int, val data: List[T]):
   private def positionOf(i: Int): Position = Position(i / columns, i % columns)
 
   def inside(p: Position): Boolean =
-    p.row >= 0 && p.row < rows && p.column >= 0 && p.column < columns // mismo metodo que en matrix
+    p.row >= 0 && p.row < rows && p.column >= 0 && p.column < columns
 
   def get(p: Position): T =
     if !inside(p) then throw new IndexOutOfBoundsException // si no esta dentro se lanza la excepcion
@@ -46,7 +46,7 @@ class MatrixList[T](val rows: Int, val columns: Int, val data: List[T]):
 
 
 
-  def cells: List[(Position, T)] = // este metodo devuelve una posicion emparejada con su valor, en orden de filas
+  def cells: List[(Position, T)] = 
     val conIndice = data.zipWithIndex // obtenemos una lista de valores asociados a su indice
     conIndice.map((valor, indice) => (positionOf(indice), valor)) // como index ya sigue el orden por filas, solo hay que obtener la posicion asociada a un indice con positionOf(indice)
 
@@ -59,3 +59,4 @@ object MatrixList:
     new MatrixList(rows, columns,
       List.tabulate(rows * columns)(i =>
         if marked.contains(Position(i / columns, i % columns)) then markedValue else defaultValue))
+ 

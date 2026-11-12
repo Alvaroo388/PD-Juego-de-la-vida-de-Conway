@@ -59,7 +59,7 @@ class Matrix[T](val rows: Int, val columns: Int, val data: List[T]):
           if inside(posicion) then aux(resto, posicion :: acc) // si la posicion es valida (esta dentro del tablero), se añade a la lista final
           else aux(resto, acc)
           }
-    aux(lista, nueva) // usamos la funcion auxiliar con la lista de posiciones posibles y una lista vacía
+    aux(lista, nueva) 
 
   def partition(f: T => Boolean): (List[Position], List[Position]) =
     @annotation.tailrec
@@ -67,7 +67,7 @@ class Matrix[T](val rows: Int, val columns: Int, val data: List[T]):
       lista match
         case Nil => (cumplen.reverse, incumplen.reverse) // devolvemos las dos listas invertidas
         case x :: resto =>
-          val posicion = positionOf(indice) // obtenemos la posicion a partir del indice
+          val posicion = positionOf(indice) 
           if f(x) then
             aux(resto, indice + 1, posicion :: cumplen, incumplen) // cuando se cumple la funcion la posicion se añade a cumplen y el indice aumenta
           else
@@ -77,7 +77,7 @@ class Matrix[T](val rows: Int, val columns: Int, val data: List[T]):
 
 
   def filterNeighbors(p: Position, f: T => Boolean): List[Position] = // el objetivo de esta funcion es quedarnos con las celdas vecinas que cumplan una funcion
-    val vecinas: List[Position] = neighbors(p) // usamos la funcion neighbors(p) para obtener una lista de las posiciones vaecinas
+    val vecinas: List[Position] = neighbors(p)
     val (cumplen, _) : (List[Position], List[Position]) = partition(f) // nos quedamos con cumplen usando partition, no hace falta guardar incumplen
     @scala.annotation.tailrec
     def aux(vecinas: List[Position], vecinas_cumplen: List[Position] ): List[Position] =
@@ -96,6 +96,7 @@ object Matrix:
     new Matrix(rows, columns, data)
 
   def apply[T](rows: Int, columns: Int, defaultValue: T): Matrix[T] = // un constructor que crea la matriz con un valor por defecto en todas las celdas
+    require(rows >= 0 && columns >= 0, "Las dimensiones no pueden ser negativas")
     @scala.annotation.tailrec
     def aux(restantes: Int, acc: List[T]) : List[T] =
       if restantes == 0 then acc
