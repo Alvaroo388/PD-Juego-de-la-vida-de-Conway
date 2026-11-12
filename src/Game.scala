@@ -125,6 +125,6 @@ class Game(val rows: Int, val columns: Int, val budget: Int, val maxGenerations:
         // calculamos el ganador
         val ganador = determineWinner(resultado1, resultado2)
 
-        // devolvemos todo de forma limpia
+        // devolvemos el resultado
         GameResult(estadoColocado, resultados, ganador)
     }

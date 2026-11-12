@@ -24,7 +24,7 @@ case class GameOfLifeMatrix(override val rows: Int, override val columns: Int, o
       @scala.annotation.tailrec
       def aux(restante: List[Position], acc: List[Cell]): List[Cell] =
         restante match {
-          case Nil => acc.reverse // devolvemos la lista de celulas en orden 
+          case Nil => acc.reverse 
           case posicion :: resto => 
             val actual = get(posicion) // obtenemos el valor asociado a la posicion
             val vecinas_vivas = countAliveNeighbors(posicion) // obtenemos el numero de vecinas vivas para aplicar las reglas
