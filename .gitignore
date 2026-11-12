@@ -1,0 +1,14 @@
+# Archivos locales de Metals, Scala CLI y servidores de compilación
+/.metals/
+/.scala-build/
+/.bloop/
+/.bsp/
+
+# Configuración local de VS Code
+/.vscode/
+
+# Resultados de compilación
+/out/
+target/
+*.class
+*.tasty
