@@ -39,9 +39,9 @@ case class GameOfLifeMatrixList(override val rows: Int, override val columns: In
 
 object GameOfLifeMatrixList:
     def empty(rows: Int, columns: Int): GameOfLifeMatrixList = // usamos el constructor para un valor por defecto de la clase padre
-        val matriz = Matrix[Cell](rows, columns, Dead)
+        val matriz = MatrixList[Cell](rows, columns, Dead)
         GameOfLifeMatrixList(rows, columns, matriz.data)
 
     def withAlive(rows: Int, columns: Int, alive: List[Position]): GameOfLifeMatrixList = // usamos el constructor par valores marcados de la clase padre
-        val matriz = Matrix[Cell](rows, columns, Dead, alive, Alive)
+        val matriz = MatrixList[Cell](rows, columns, Dead, alive, Alive)
         GameOfLifeMatrixList(rows, columns, matriz.data)
