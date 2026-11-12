@@ -14,31 +14,31 @@ case class GameOfLifeMatrix(override val rows: Int, override val columns: Int, o
 
     def aliveCount: Int = aliveCells.length // longitud de la lista de las células vivas
 
-    def countAliveNeighbors(p: Position): Int = { 
+    def countAliveNeighbors(p: Position): Int =
       val vecinas_vivas = filterNeighbors(p, celda => celda == Alive) // creamos una lista con las vecinas vivas y calculamos su longitud
       vecinas_vivas.length
-    }
+    
 
     def nextGeneration: GameOfLifeMatrix =
       val(posiciones, _) = partition(_ => true) // partition con la condicion true devuelve la lista de todas las posiciones
       @scala.annotation.tailrec
       def aux(restante: List[Position], acc: List[Cell]): List[Cell] =
         restante match {
-          case Nil => acc.reverse
+          case Nil => acc.reverse // devolvemos la lista de celulas en orden 
           case posicion :: resto => 
-            val actual = get(posicion)
-            val vecinas_vivas = countAliveNeighbors(posicion)
-            if actual == Alive then 
-              if vecinas_vivas == 2 || vecinas_vivas == 3 then aux(resto, actual::acc)
-              else aux(resto, Dead :: acc)
-            else
-              if vecinas_vivas == 3 then aux(resto, Alive :: acc)
-              else aux(resto, actual :: acc)  
+            val actual = get(posicion) // obtenemos el valor asociado a la posicion
+            val vecinas_vivas = countAliveNeighbors(posicion) // obtenemos el numero de vecinas vivas para aplicar las reglas
+            if actual == Alive then // Para celula viva
+              if vecinas_vivas == 2 || vecinas_vivas == 3 then aux(resto, actual::acc) // si el numero de vecinas vivas es dos o tres se mantiene viva
+              else aux(resto, Dead :: acc) // si no, se añade una celula muerta en su lugar a la nueva lista de celulas
+            else // Para celula muerta
+              if vecinas_vivas == 3 then aux(resto, Alive :: acc) // si el numero de vecinas vivas es tres, esta nace, se añade una celula alive en su lugar a la nueva lista
+              else aux(resto, actual :: acc)   // si no, se añade la celula actual a la nueva lista
                       
                      
         }
-      val nuevaData = aux(posiciones, List.empty[Cell])
-      new GameOfLifeMatrix(rows, columns, nuevaData)
+      val nuevaData = aux(posiciones, List.empty[Cell]) // usamos el metodo auxiliar para obtener la nueva lista de datos
+      new GameOfLifeMatrix(rows, columns, nuevaData) // creamos el nuevo tablero mateniendo filas y columnas con la nueva lista de datos
     
     
     
